@@ -25,8 +25,7 @@ def get_data(filepath):
                 vector.append(0)
             else :
                 break
-    print(data_set)
-    print(vector)
+    print('===========start training================')
     count_vect = CountVectorizer(stop_words="english",decode_error='ignore')
     X_train_counts = count_vect.fit_transform(data_set)
 #     print(X_train_counts.shape)
@@ -41,21 +40,29 @@ def get_data(filepath):
     y = vector
     clf = GaussianNB()
     clf.fit(X, y)
-    
+    return clf,count_vect,tfidf_transformer
+
+def test(filepath):
+    clf,count_vect,tfidf_transformer = get_data(filepath)
+    print('======Training terminated, now start predict==================')
     doc_to_pridict = [['overcast', 'cool', 'normal','strong']]
     print('==predict the possibility of the condition ==')
     print('outlook    temp    humidity    wind     class')
-    docs_new = [' '.join(doc_to_pridict[0][0:])]
-    X_new_counts = count_vect.transform(docs_new)
-    X_new_tfidf = tfidf_transformer.transform(X_new_counts)
+    print(doc_to_pridict)
 
+    docs_new = [' '.join(doc_to_pridict[0][:])]
+    X_new_counts = count_vect.transform(docs_new)
+    
+    X_new_tfidf = tfidf_transformer.transform(X_new_counts)
     predicted = clf.predict(X_new_tfidf.toarray())
     
     if predicted == [0]:
         result = 'no'
     elif predicted == [1]:
         result = 'yes'
+    print('========The answer is ============')
     print(result)
+
             
 if __name__ == '__main__':
-    get_data(r'nbtest.csv')
+    test(r'nbtest.csv')
